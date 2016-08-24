@@ -1,8 +1,6 @@
 # CodeIgniter-Multiple-Uploads
 Extend CodeIgniter' Upload library to support multiple file uploads through one HTML input-field.
 
----
-
 ## Installation
 - [Download](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/releases) the latest stable package;
 - Move both files from `/src` (`MY_Uploads.php`* and `Uploads.php`) to `<your application folder>/libraries`.
@@ -18,7 +16,6 @@ $config['subclass_prefix'] = 'FOO_';
 ```
 you must rename the `MY_Uploads.php` file to `FOO_Uploads.php`, otherwise CI won't be able to override its library properly.
 
----
 
 ## Basic Usage Instructions
 If you do not know the basics of how to upload a file using CI you can check out the [official documentation here](https://www.codeigniter.com/userguide3/libraries/file_uploading.html). There's also a running example in the [demo](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/tree/master/demo) folder using CI v3.1.0.
@@ -83,11 +80,9 @@ if ($_FILES['photos']['error'][0] !== UPLOAD_ERR_NO_FILE) {
 }
 ```
 
----
 ## Compatibility
 Tested in CodeIgniter v3.x
 
----
 ## FAQ
 ##### Can I use `Uploads` to handle single uploads?
 
@@ -123,12 +118,10 @@ $uploadsData = array(
 */
 ```
 
----
 ## Feedback
-Any feedback, feature requests, pull requests, bug reporting etc are wellcome.\
+Any feedback, feature requests, pull requests, bug reporting etc are wellcome.
 You can also [create an issue](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/issues).
 
----
 ## License
-[MIT License](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/blob/master/LICENSE)\
+[MIT License](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/blob/master/LICENSE)
 Copyright (c) 2016, [Denison Martins](http://denison.me/en).
