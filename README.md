@@ -1,9 +1,11 @@
 # CodeIgniter-Multiple-Uploads
 Extend CodeIgniter' Upload library to support multiple file uploads through one HTML input-field.
 
+---
+
 ## Installation
-- Download the `src` files;
-- Move both files (`MY_Uploads.php`* and `Uploads.php`) to the folder `libraries` inside your `application` (or whatever you've named it) folder.
+- [Download](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/releases) the latest stable package;
+- Move both files from `/src` (`MY_Uploads.php`* and `Uploads.php`) to `<your application folder>/libraries`.
 
 \* The `MY_` prefix should reflect your `subclass_prefix` configuration.
 So, just as an example, if in here `/application/config/config.php` you've changed from
@@ -12,22 +14,20 @@ $config['subclass_prefix'] = 'MY_';
 ```
 to
 ```
-$config['subclass_prefix'] = 'YAY_';
+$config['subclass_prefix'] = 'FOO_';
 ```
-you must rename the `MY_Uploads.php` file to `YAY_Uploads.php`, otherwise CI won't be able to override the `Upload` library properly.
+you must rename the `MY_Uploads.php` file to `FOO_Uploads.php`, otherwise CI won't be able to override its library properly.
 
-## Usage
-The usage is simple and simillar to the default one. You can checkout a "full" example running undo CI v.3.0.4 in the `demo` folder.
+---
 
-Basically, you'll need a `form`, a `route` and a `controller`.
+## Basic Usage Instructions
+If you do not know the basics of how to upload a file using CI you can check out the [official documentation here](https://www.codeigniter.com/userguide3/libraries/file_uploading.html). There's also a running example in the [demo](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/tree/master/demo) folder using CI v3.1.0.
 
-The `form`:
+Basically, CI' `Upload` library serves us as an instance of a single upload and its data. So what this `Uploads` class do is to wrap that functionality in such way that it handles multiple `Upload` instances sharing the same settings.
+
+Let's assume we have this form in a view:
 ```
 <form action="/uploadHandler" method="POST" enctype="multipart/form-data">
-    <label>
-        Single photo:
-        <input type="file" name="photo" accept="image/*">
-    </label>
     <label>
         Multiple photos:
         <input type="file" name="photos[]" accept="image/*" multiple>
@@ -36,17 +36,99 @@ The `form`:
 </form>
 ```
 
-The `route`:
+and in our handler inside the controller:
 ```
-$route['uploadHandler'] = "UploadController/uploadHandler";
+// Check if any files were selected in the field `photos`.
+if ($_FILES['photos']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+    // Define the settings that will be used against all files.
+    $myUploadSettings = array(
+        'upload_path'   => dirname(BASEPATH) ."/uploads/",
+        'allowed_types' => "jpg|png",
+        'min_width'     => 450
+    );
+
+    // Load the library with our settings.
+    $this->load->library('uploads', $myUploadSettings);
+
+    // Attempt to upload all files.
+    $uploadedData = array();
+    $uploadErrorsList = array();
+    if (!$this->uploads->do_upload('photos')) {
+        // Retrieve all errors in a single string.
+        $uploadErrorsString = $this->uploads->display_errors();
+        // Retrieve an associative array containing all errors separated by the files in which their occurred  (as fileName => errMessage).
+        $uploadErrorsList = $this->uploads->getErrorMessages();
+    } else {
+        // All files were uploaded successfully.
+    }
+
+    // Retrieve an associative array containing some data from all files that were uploaded successfully (as fileName => fileData).
+    $uploadedData = $this->uploads->data();
+
+    // Check if any files were uploaded successfully.
+    if (count($uploadedData) > 0) {
+        // Yay, at least one file was uploaded!
+    } else {
+        // No files were uploaded.
+    }
+
+    // Check and handle errors that may occurred.
+    if (count($uploadErrorsList) > 0) {
+        // Damn, let's handle these errors.
+    } else {
+        // Yay, no errors!
+    }
+} else {
+    // No files were selected.
+}
 ```
 
-The `controller` (in this example `UploadController.php`):
+---
+## Compatibility
+Tested in CodeIgniter v3.x
+
+---
+## FAQ
+##### Can I use `Uploads` to handle single uploads?
+
+Definitely! Just keep in mind that `$this->uploads->data()` will ALWAYS return an array listing associative arrays.
+Let's compare the "old" and "new" ways to do so and that we uploaded an image named `myProfilePic.jpeg`.
+
+Retrieve file data using CI default `Upload` library:
+```
+$uploadData = $this->upload->data();
+/*
+$uploadData = array(
+    'filename' => "myProfilePic.jpeg",
+    'width'    => 200,
+    'height'   => 200,
+    ...
+);
+*/
 ```
 
+Now let's achieve the same thing using the `Uploads` library:
 ```
-If we want to upload only a single file, we may use the
+$uploadsData = $this->uploads->data();
+$uploadData = $uploadsData[0];
+/*
+$uploadsData = array(
+    0 => array(
+        'filename' => "myProfilePic.jpeg",
+        'width'    => 200,
+        'height'   => 200,
+        ...
+    )
+);
+*/
+```
 
+---
+## Feedback
+Any feedback, feature requests, pull requests, bug reporting etc are wellcome.\
+You can also [create an issue](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/issues).
 
-What happens if we upload 3 files but one of them fails?
-What happens if we use `uploads` library to handle single upload files?
+---
+## License
+[MIT License](https://github.com/deenison/CodeIgniter-Multiple-Files-Upload/blob/master/LICENSE)\
+Copyright (c) 2016, [Denison Martins](http://denison.me/en).
